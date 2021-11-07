@@ -10,45 +10,68 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 public class Main {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(8);
+        ThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(8);
 
         System.out.print("chunks> ");
         int chunk = Integer.parseInt(scanner.nextLine());
         System.out.print("divider> ");
         int teiler = Integer.parseInt(scanner.nextLine());
 
-        for (int i = 0; i < chunk; i++) {
-            Task task = new Task(1, teiler, chunk);
-            executor.execute(task);
+        List<Integer> numbersList = einlesen(new File("C:\\Schule\\2021-22 KoglerD190073\\POS\\Uebungen\\KoglerD_UE4_11.10.21\\UE4_KoglerD\\numbers.csv"));
+
+        int numbercount = numbersList.size();
+        int countofNumsinSublist = numbercount/chunk;
+        int up = numbercount/chunk;
+        int down = 0;
+        for (int i = 0; i < chunk-1; i++) {
+            List<Integer> sublistNumbers = numbersList.subList(down, up);
+            executor.execute(() -> {
+                for (int j : sublistNumbers) {
+                    if (j % teiler == 0) {
+                        System.out.println(j);
+                    }
+                }
+            });
+            if (down <= numbercount-countofNumsinSublist && up <= numbercount){
+            down += up--;
+            up += up;}
         }
         executor.shutdown();
-
-        /*List<Integer> list = einlesen(new File("C:\\Schule\\2021-22 KoglerD190073\\POS\\Uebungen\\KoglerD_UE4_11.10.21\\UE4_KoglerD\\numbers.csv"));
-
-        System.out.print("chunks> ");
-        int chunk = Integer.parseInt(scanner.nextLine());
-        System.out.print("divider> ");
-        int teiler = Integer.parseInt(scanner.nextLine());
-        int zahlInsgesamt = 0;
-        for (int i : list) {
-            //zahlInsgesamt++;
-            if (i % teiler == 0) {
-                System.out.println(i);
-                zahlInsgesamt++;
-            }
-        }
-        System.out.println("Anzahl Zahlen: "+zahlInsgesamt);*/
     }
 
+    public static List<Integer> einlesen(File file) {
+        List<Integer> list = new ArrayList<>();
+        try {
+            Scanner scanner = new Scanner(file);
+            String line = "";
+            while (scanner.hasNextLine()) {
+                line = scanner.nextLine();
+                String[] split = line.split(":");
+                for (int i = 0; i < split.length; i++) {
+                    try {
+                        if (split[i] != ":" || split[i] != null) {
+                            list.add(Integer.parseInt(split[i]));
+                        }
+                    } catch (NumberFormatException nfe) {
+                        split[i] = ":";
+                    }
+                }
+            }
+        } catch (FileNotFoundException fnfe) {
+            System.out.println("File not Found");
+        }
+        return list;
+    }
 
-
-    public static List<int[]> getielteListe(int anzahlZahlen, int chunks, int[] alleZahlen) {
+    /*public static List<int[]> getielteListe(int anzahlZahlen, int chunks, int[] alleZahlen) {
         List<int[]> numbersList = new ArrayList<>();
         int zDC = anzahlZahlen / chunks;
         int anzZahlenNotGood = anzahlZahlen;
@@ -66,6 +89,6 @@ public class Main {
         }
 
         return subList;
-    }
+    }*/
 
 }
