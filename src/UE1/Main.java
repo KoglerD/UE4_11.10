@@ -31,19 +31,22 @@ public class Main {
         int countofNumsinSublist = numbercount/chunk;
         int up = numbercount/chunk;
         int down = 0;
-        for (int i = 0; i < chunk-1; i++) {
-            List<Integer> sublistNumbers = numbersList.subList(down, up);
-            executor.execute(() -> {
-                for (int j : sublistNumbers) {
-                    if (j % teiler == 0) {
-                        System.out.println(j);
+            for (int i = 0; i < chunk; i++) {
+                List<Integer> sublistNumbers = numbersList.subList(down, up);
+                executor.execute(() -> {
+                    for (int j : sublistNumbers) {
+                        if (j % teiler == 0) {
+                            System.out.println(j);
+                        }
                     }
+                });
+                if (down <= numbercount-countofNumsinSublist-countofNumsinSublist && up <= numbercount-countofNumsinSublist){
+                    down = up;
+                    up = up+countofNumsinSublist;
                 }
-            });
-            if (down <= numbercount-countofNumsinSublist && up <= numbercount){
-            down += up--;
-            up += up;}
-        }
+            }
+
+
         executor.shutdown();
     }
 
