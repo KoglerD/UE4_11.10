@@ -33,6 +33,30 @@ public class Main {
 
             List<Integer> subList = new ArrayList<>();
 
+            if (chunk <= 1){
+                        for (int x = min; x <= zahl; x++) {
+                            subList.add(x);
+                        }
+
+
+                    result = executor.submit((Callable<Integer>) () -> {
+                        int addAll = 0;
+                        for (int y : subList) {
+                            addAll += y;
+                        }
+                        subList.clear();
+                        return addAll;
+                    });
+                    try {
+                        solution+=result.get().intValue();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+            }else{
+
         for (int i = 1; i < chunk; i++) {
             if (max <= (zahl - max)) {
                 for (int x = min; x <= max; x++) {
@@ -66,13 +90,13 @@ public class Main {
             max += 100;
 
             try {
-                solution+=result.get().intValue();
+                solution += result.get().intValue();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-
+        }
         }
 
         executor.shutdown();
